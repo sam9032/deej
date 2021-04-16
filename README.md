@@ -1,3 +1,15 @@
+# Custom version of deej
+
+I build an audio controller with 4 rotary encoders, build in buttons and 1 potentiometer slider. All connected to an arduino nano.
+
+Using the original code from the deej project and the code from this rotary encoder builds https://github.com/SNR-Tech-Bytes/deej_encoder and https://github.com/numanair/deej_encoder i build my own version.
+
+**Work in progress**
+
+
+
+
+
 # deej
 
 deej is an **open-source hardware volume mixer** for Windows and Linux PCs. It lets you use real-life sliders (like a DJ!) to **seamlessly control the volumes of different apps** (such as your music player, the game you're playing and your voice chat session) without having to stop what you're doing.
