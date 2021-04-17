@@ -1,149 +1,75 @@
-#include <Arduino.h>
 #include <RotaryEncoder.h>
-//#include <FastLED.h>
 
-// LED setup:
-// Number of LEDs (generally same as NUM_SLIDERS):
-//#define NUM_LEDS 5
-// LED control pin:
-//#define DATA_PIN 2
-//#define ledBrightness 50
-//#define minHue 14
-//#define maxHue 102
-//#define mutecolor Red
-//#define colorCorrectionMode Typical8mmPixel
-//CRGB leds[NUM_LEDS];
+const int NUM_SLIDERS = 1; //number of analog sliders
+const int NUM_ROTARY = 4; //number of rotary encoders
+const int NUM_BUTTONS = 4; //number of pushbuttons
+const int analogInputs[NUM_SLIDERS] = {A0}; //analog input pins
+int buttonState[NUM_BUTTONS] = { };
+int analogValues[NUM_SLIDERS+NUM_ROTARY]; //array with analog values (0-1023)
 
-const int NUM_SLIDERS = 4;
-int analogSliderValues[NUM_SLIDERS];
 
-// avoid using pins with LEDs attached
-// buttons pins:
-const int button_pin[NUM_SLIDERS] = {4,7,10,13};
-//int encodertoLedHue[NUM_SLIDERS];
-
-//ESP32Encoder encoder[NUM_SLIDERS];
 RotaryEncoder encoder1(2,3);
 RotaryEncoder encoder2(5,6);
 RotaryEncoder encoder3(8,9);
 RotaryEncoder encoder4(11,12);
 
+const int button1=4;
+const int button2=7;
+const int button3=10;
+const int button4=13;
+
+unsigned long lastDebounceTime = 0;  // the last time the output pin was toggled
+unsigned long debounceDelay = 175;    // the debounce time; increase if the output flickers
 
 
-int knobState[NUM_SLIDERS];
-int Mute[NUM_SLIDERS];
-int knobVal[NUM_SLIDERS];
 
-void sendSliderValues();
-void printSliderValues();
-void checkButtons();
-void checkEncoders();
 
-void setup() {
-//    LEDS.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS)
-//        .setCorrection(colorCorrectionMode);
-//    LEDS.setBrightness(ledBrightness);
 
-    Serial.begin(9600);
 
-//    ESP32Encoder::useInternalWeakPullResistors = UP;
-    // set encoder pins A & B (CLK & DT) here:
-    encoder[0].attachHalfQuad(2, 3);
-    encoder[1].attachHalfQuad(5, 6);
-    encoder[2].attachHalfQuad(8, 9);
-    encoder[3].attachHalfQuad(11, 12);
+void setup() { 
+  for (int i = 0; i < NUM_SLIDERS; i++) {
+    pinMode(analogInputs[i], INPUT);
+  }
 
-    for (int i = 0; i < NUM_SLIDERS; i++) {
-        analogSliderValues[i] = 512;
-        pinMode(button_pin[i], INPUT_PULLUP);
-        knobState[i] = 0;
-        Mute[i] = 0;
-        encoder[i].setCount(51);
-    }
+  Serial.begin(9600);
 }
 
 void loop() {
-    for (int i = 0; i < NUM_SLIDERS; i++) {
-        knobVal[i] = encoder[i].getCount();
-    }
-    // Master = encoder1.getCount(); //replaced with knobVal
-    // Discord = encoder2.getCount();
-    // Chrome = encoder3.getCount();
-    // Gaming = encoder4.getCount();
-    // Music = encoder5.getCount();
+  updateSliderValues();
+  sendSliderValues(); // Actually send data (all the time)
+  // printSliderValues(); // For debug
+  delay(10);
+}
 
-    checkButtons();
-    checkEncoders();
-    sendSliderValues();
-    // printSliderValues();//debug
-    //FastLED.show();
+void updateSliderValues() {
+  for (int i = 0; i < NUM_SLIDERS; i++) {
+     analogValues[i] = analogRead(analogInputs[i]);
+  }
 }
 
 void sendSliderValues() {
-    String builtString = String("");
+  String builtString = String("");
 
-    for (int i = 0; i < NUM_SLIDERS; i++) {
-        builtString += String((int)analogSliderValues[i]);
+  for (int i = 0; i < NUM_SLIDERS; i++) {
+    builtString += String((int)analogValues[i]);
 
-        if (i < NUM_SLIDERS - 1) {
-            builtString += String("|");
-        }
+    if (i < NUM_SLIDERS - 1) {
+      builtString += String("|");
     }
-
-    Serial.println(builtString);
+  }
+  
+  Serial.println(builtString);
 }
 
 void printSliderValues() {
-    for (int i = 0; i < NUM_SLIDERS; i++) {
-        String printedString = String("Slider #") + String(i + 1) +
-                               String(": ") + String(analogSliderValues[i]) +
-                               String(" mV");
-        Serial.write(printedString.c_str());
+  for (int i = 0; i < NUM_SLIDERS; i++) {
+    String printedString = String("Slider #") + String(i + 1) + String(": ") + String(analogValues[i]) + String(" mV");
+    Serial.write(printedString.c_str());
 
-        if (i < NUM_SLIDERS - 1) {
-            Serial.write(" | ");
-        } else {
-            Serial.write("\n");
-        }
+    if (i < NUM_SLIDERS - 1) {
+      Serial.write(" | ");
+    } else {
+      Serial.write("\n");
     }
-}
-
-void checkButtons() {
-    for (int i = 0; i < NUM_SLIDERS; i++) {
-        if (digitalRead(button_pin[i]) == 0 && knobState[i] == 0) {
-            Mute[i] = !Mute[i];
-            knobState[i] = 1;
-            delay(25);
-        }
-        if (digitalRead(button_pin[i]) == 1) {
-            knobState[i] = 0;
-        }
-    }
-}
-
-void checkEncoders() {
-    for (int i = 0; i < NUM_SLIDERS; i++) {
-        if (knobVal[i] > 0 && knobVal[i] < 102 && Mute[i] == 0) {
-            // Normal volume levels
-            analogSliderValues[i] = map(knobVal[i], 0, 102, 0, 1023);
-//            encodertoLedHue[i] = map(knobVal[i], 0, 102, minHue, maxHue);
-//            leds[i].setHue(encodertoLedHue[i]);
-        } else if (Mute[i] == 0 && (knobVal[i] >= 102)) {
-            // constrain to max volume
-            analogSliderValues[i] = 1023;
-            encoder[i].setCount(102);
-//            leds[i].setHue(maxHue);
-        } else if (Mute[i] == 1) {
-            // is muted, output volume of 0
-            analogSliderValues[i] = 0;
- //           leds[i] = CRGB::mutecolor;
-        } else {
-            // not muted, but volume = 0
-            analogSliderValues[i] = 0;
-            encoder[i].setCount(0);
-//            leds[i].setHue(minHue);
-            // minHue is probably better since
-            // we aren't actually muted
-        }
-    }
+  }
 }
