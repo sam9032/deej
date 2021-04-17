@@ -6,7 +6,7 @@ const int NUM_BUTTONS = 4; //number of pushbuttons
 const int analogInputs[NUM_SLIDERS] = {A0}; //analog input pins
 int buttonState[NUM_BUTTONS] = { };  //initialize with 0
 int muteState[NUM_BUTTONS] = { };
-int analogValues[NUM_SLIDERS+NUM_ROTARY]; //array with analog values (0-1023)
+int analogValues[NUM_SLIDERS + NUM_ROTARY]; //array with analog values created from rotary encoders (0-1023)
 
 
 //initialize rotary encoders and set pins
@@ -39,24 +39,35 @@ void setup() {
   pinMode(button3, INPUT_PULLUP);
   pinMode(button4, INPUT_PULLUP);
 
-// set start values for rotary encoders
+
+// set start values for rotary encoders between 0-1023
 
 for (int i = 0; i < NUM_ROTARY; i++){
-  analogInputs[i] = 512;
+  analogValues[i+NUM_SLIDERS] = 512;
 }
-encoder1.write(51);
-encoder2.write(51);
-encoder3.write(51);
-encoder4.write(51);
+
+
+//set initial encoder position 
+encoder1.setPosition(51);
+encoder2.setPosition(51);
+encoder3.setPosition(51);
+encoder4.setPosition(51);
 
 Serial.begin(9600);
 }
 
 void loop() {
+
+  //analog input
   updateSliderValues();
-  sendSliderValues(); // Actually send data (all the time)
   // printSliderValues(); // For debug
-  delay(10);
+
+  //digital input
+  checkButtons();
+  checkEncoders();
+
+
+  sendSliderValues(); // Actually send data (all the time)
 }
 
 void updateSliderValues() {
@@ -90,4 +101,16 @@ void printSliderValues() {
       Serial.write("\n");
     }
   }
+}
+
+void updateRotaryValues() {
+
+}
+
+void checkButtons(){
+
+}
+
+void checkEncoders(){
+
 }
