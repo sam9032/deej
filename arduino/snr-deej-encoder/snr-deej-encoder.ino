@@ -119,48 +119,50 @@ void printSliderValues() {
     }
   }
 }
+
 void checkButtons(){
-if (digitalRead(masterButton)==0 && masterState ==0){
-masterMute = !masterMute ;
-masterState =1;
-delay(25);
+    if (digitalRead(masterButton)==0 && masterState ==0){
+    masterMute = !masterMute ;
+    masterState =1;
+    delay(25);
+    }
+    if (digitalRead(masterButton)==1){
+    masterState=0;
+    }
+    if (digitalRead(discordButton)==0 && discordState ==0){
+    discordMute = !discordMute ;
+    discordState =1;
+    delay(25);
+    }
+    if (digitalRead(discordButton)==1){
+    discordState=0;
+    }
+    if (digitalRead(chromeButton)==0 && chromeState ==0){
+    chromeMute = !chromeMute ;
+    chromeState =1;
+    delay(25);
+    }
+    if (digitalRead(chromeButton)==1){
+    chromeState=0;
+    }
+    if (digitalRead(gamingButton)==0 && gamingState ==0){
+    gamingMute = !gamingMute ;
+    gamingState =1;
+    delay(25);
+    }
+    if (digitalRead(gamingButton)==1){
+    gamingState=0;
+    }
+    if (digitalRead(musicButton)==0 && musicState ==0){
+    musicMute = !musicMute ;
+    musicState =1;
+    delay(25);
+    }
+    if (digitalRead(musicButton)==1){
+    musicState=0;
+    }
 }
- if (digitalRead(masterButton)==1){
-  masterState=0;
- }
-if (digitalRead(discordButton)==0 && discordState ==0){
-discordMute = !discordMute ;
-discordState =1;
-delay(25);
-}
- if (digitalRead(discordButton)==1){
-  discordState=0;
- }
- if (digitalRead(chromeButton)==0 && chromeState ==0){
-chromeMute = !chromeMute ;
-chromeState =1;
-delay(25);
-}
- if (digitalRead(chromeButton)==1){
-  chromeState=0;
- }
- if (digitalRead(gamingButton)==0 && gamingState ==0){
-gamingMute = !gamingMute ;
-gamingState =1;
-delay(25);
-}
- if (digitalRead(gamingButton)==1){
-  gamingState=0;
- }
- if (digitalRead(musicButton)==0 && musicState ==0){
-musicMute = !musicMute ;
-musicState =1;
-delay(25);
-}
- if (digitalRead(musicButton)==1){
-  musicState=0;
- }
-}
+
 void checkEncoders(){
       if (Master > 0 && Master < 102 && masterMute==0){
         analogSliderValues[0]=Master*10;
