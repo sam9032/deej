@@ -6,9 +6,9 @@ const int NUM_BUTTONS = 4; //number of pushbuttons
 const int analogInputs[NUM_SLIDERS] = {A0}; //analog input pins
 int buttonState[NUM_BUTTONS] = { };  //initialize with 0
 int muteState[NUM_BUTTONS] = { };
-int analogValues_slider[NUM_SLIDERS]; //array with analog values read from analog input (0-1023)
-int analogValues_rotary[NUM_ROTARY]; //array with analog values created from rotary encoders (0-1023)
-
+int analogValues_slider[NUM_SLIDERS] = { }; //array with analog values read from analog input (0-1023)
+int analogValues_rotary[NUM_ROTARY] = { }; //array with analog values created from rotary encoders (0-1023)
+int digitalValues_rotary[NUM_ROTARY] = { };
 
 //initialize rotary encoders and set pins
 RotaryEncoder encoder1(2,3);
@@ -110,7 +110,50 @@ void updateRotaryValues() {
 
 void checkButtons(){
 
+  buttonState[0] = digitalRead(button1);
+  buttonState[1] = digitalRead(button1);
+  buttonState[2] = digitalRead(button1);
+  buttonState[3] = digitalRead(button1);
+
+
+  for (int i = 0; i < NUM_BUTTONS; i++){
+    if (buttonState[i] == 0 )
+  }
 }
 
 void checkEncoders(){
+
+  digitalValues_rotary[0] = encoder1.getPosition();
+  digitalValues_rotary[1] = encoder2.getPosition();
+  digitalValues_rotary[2] = encoder3.getPosition();
+  digitalValues_rotary[3] = encoder4.getPosition();
+
+
+for (int i = 0; i < NUM_ROTARY; i++){
+  
+  if (digitalValues_rotary[i] > 0 && digitalValues_rotary[i] < 102 && muteState[i] == 0){
+    analogValues_rotary[i] = digitalValues_rotary[i]*10;
+  }
+
+  else if (muteState[i]==0 && digitalValues_rotary[i] > 101){
+    analogValues_rotary[i] = 102*10;
+    digitalValues_rotary[i] = 102;
+  }
+
+  else if (muteState[i] == 1){
+    analogValues_rotary[i] = 0;
+  }
+
+  else {
+    analogValues_rotary[i] = 0;
+    digitalValues_rotary[i] = 0;
+  }
+
+}
+
+encoder1.setPosition(digitalValues_rotary[0]);
+encoder2.setPosition(digitalValues_rotary[1]);
+encoder3.setPosition(digitalValues_rotary[2]);
+encoder4.setPosition(digitalValues_rotary[3]);
+  
 }
