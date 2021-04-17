@@ -76,6 +76,10 @@ void updateSliderValues() {
   }
 }
 
+void updateRotaryValues() {
+
+}
+
 void sendSliderValues() {
   String builtString = String("");
 
@@ -112,5 +116,4 @@ void checkButtons(){
 }
 
 void checkEncoders(){
-
 }
