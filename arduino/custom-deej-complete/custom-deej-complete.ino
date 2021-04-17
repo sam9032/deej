@@ -43,7 +43,7 @@ void setup() {
 
 // set start values for rotary encoders between 0-1023
 
-for (int i = 0; i < NUM_ROTARY; i++){
+for (int i = 0; i < NUM_ROTARY; i++) {
   analogValues_rotary[i] = 512;
 }
 
@@ -67,8 +67,8 @@ void loop() {
   checkButtons();
   checkEncoders();
 
-
-  sendSliderValues(); // Actually send data (all the time)
+  sendAllValues();
+  // sendSliderValues(); // Actually send data (all the time)
 }
 
 void updateSliderValues() {
@@ -104,24 +104,57 @@ void printSliderValues() {
   }
 }
 
-void updateRotaryValues() {
+void printButtonValues() {
+
+  for (int i = 0; i < NUM_BUTTONS; i++) {
+    String printedString = "buttonState " + i + ": " + buttonState[i];
+    Serial.write(printedString.c_str()); 
+    }
+  }
+}
+
+void printRotaryValues() {
+
+  for (int i = 0; i < NUM_ROTARY; i++) {
+    String printedString = "Rotary encoder " + i + "; digital: " + digitalValues_rotary[i] 
+    + "; analog: " + analogValues_rotary[i];
+    Serial.write(printedString.c_str());
+    }
+  }
+}
+
+void sendAllValues() {
+  String builtString = String("");
+
+  for (int i = 0; i < NUM_SLIDERS; i++) {
+    builtString += String((int)analogValues_slider[i]);
+
+    if (i < (NUM_ROTARY+NUM_SLIDERS) - 1) {
+      builtString += String("|");
+    }
+  }
+  for (int i = 0; i < NUM_ROTARY; i++) {
+    builtString += String((int)analogValues_rotary[i]);
+
+    if (i < (NUM_ROTARY+NUM_SLIDERS) - 1) {
+      builtString += String("|");
+    }
+  }
 
 }
 
-void checkButtons(){
+
+void checkButtons() {
 
   buttonState[0] = digitalRead(button1);
   buttonState[1] = digitalRead(button1);
   buttonState[2] = digitalRead(button1);
   buttonState[3] = digitalRead(button1);
 
-
-  for (int i = 0; i < NUM_BUTTONS; i++){
-    if (buttonState[i] == 0 )
   }
 }
 
-void checkEncoders(){
+void checkEncoders() {
 
   digitalValues_rotary[0] = encoder1.getPosition();
   digitalValues_rotary[1] = encoder2.getPosition();
@@ -129,18 +162,18 @@ void checkEncoders(){
   digitalValues_rotary[3] = encoder4.getPosition();
 
 
-for (int i = 0; i < NUM_ROTARY; i++){
+for (int i = 0; i < NUM_ROTARY; i++) {
   
-  if (digitalValues_rotary[i] > 0 && digitalValues_rotary[i] < 102 && muteState[i] == 0){
+  if (digitalValues_rotary[i] > 0 && digitalValues_rotary[i] < 102 && muteState[i] == 0) {
     analogValues_rotary[i] = digitalValues_rotary[i]*10;
   }
 
-  else if (muteState[i]==0 && digitalValues_rotary[i] > 101){
+  else if (muteState[i]==0 && digitalValues_rotary[i] > 101) {
     analogValues_rotary[i] = 102*10;
     digitalValues_rotary[i] = 102;
   }
 
-  else if (muteState[i] == 1){
+  else if (muteState[i] == 1) {
     analogValues_rotary[i] = 0;
   }
 
