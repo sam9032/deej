@@ -6,7 +6,8 @@ const int NUM_BUTTONS = 4; //number of pushbuttons
 const int analogInputs[NUM_SLIDERS] = {A0}; //analog input pins
 int buttonState[NUM_BUTTONS] = { };  //initialize with 0
 int muteState[NUM_BUTTONS] = { };
-int analogValues[NUM_SLIDERS + NUM_ROTARY]; //array with analog values created from rotary encoders (0-1023)
+int analogValues_slider[NUM_SLIDERS]; //array with analog values read from analog input (0-1023)
+int analogValues_rotary[NUM_ROTARY]; //array with analog values created from rotary encoders (0-1023)
 
 
 //initialize rotary encoders and set pins
@@ -43,7 +44,7 @@ void setup() {
 // set start values for rotary encoders between 0-1023
 
 for (int i = 0; i < NUM_ROTARY; i++){
-  analogValues[i+NUM_SLIDERS] = 512;
+  analogValues_rotary[i] = 512;
 }
 
 
@@ -72,19 +73,15 @@ void loop() {
 
 void updateSliderValues() {
   for (int i = 0; i < NUM_SLIDERS; i++) {
-     analogValues[i] = analogRead(analogInputs[i]);
+     analogValues_slider[i] = analogRead(analogInputs[i]);
   }
-}
-
-void updateRotaryValues() {
-
 }
 
 void sendSliderValues() {
   String builtString = String("");
 
   for (int i = 0; i < NUM_SLIDERS; i++) {
-    builtString += String((int)analogValues[i]);
+    builtString += String((int)analogValues_slider[i]);
 
     if (i < NUM_SLIDERS - 1) {
       builtString += String("|");
@@ -96,7 +93,7 @@ void sendSliderValues() {
 
 void printSliderValues() {
   for (int i = 0; i < NUM_SLIDERS; i++) {
-    String printedString = String("Slider #") + String(i + 1) + String(": ") + String(analogValues[i]) + String(" mV");
+    String printedString = String("Slider #") + String(i + 1) + String(": ") + String(analogValues_slider[i]) + String(" mV");
     Serial.write(printedString.c_str());
 
     if (i < NUM_SLIDERS - 1) {
