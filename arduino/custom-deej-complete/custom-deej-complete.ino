@@ -1,4 +1,4 @@
-#include <RotaryEncoder.h>
+#include <Encoder.h>
 
 const int NUM_SLIDERS = 1; //number of analog sliders
 const int NUM_ROTARY = 4; //number of rotary encoders
@@ -11,10 +11,10 @@ int analogValues_rotary[NUM_ROTARY] = { }; //array with analog values created fr
 int digitalValues_rotary[NUM_ROTARY] = { };
 
 //initialize rotary encoders and set pins
-RotaryEncoder encoder1(2, 3);
-RotaryEncoder encoder2(5, 6);
-RotaryEncoder encoder3(8, 9);
-RotaryEncoder encoder4(11, 12);
+Encoder encoder1(2, 3, Encoder);
+Encoder encoder2(5, 6, Encoder);
+Encoder encoder3(8, 9, Encoder);
+Encoder encoder4(11, 12, Encoder);
 
 // encoder button pins
 const int button1 = 4;
@@ -47,10 +47,10 @@ void setup() {
 
 
   //set initial encoder position
-  encoder1.setPosition(51);
-  encoder2.setPosition(51);
-  encoder3.setPosition(51);
-  encoder4.setPosition(51);
+  encoder1.write(51);
+  encoder2.write(51);
+  encoder3.write(51);
+  encoder4.write(51);
 
   Serial.begin(9600);
 }
@@ -65,7 +65,8 @@ void loop() {
   checkButtons();
   // printButtonValues();
   checkEncoders();
-  sendAllValues(); // Actually send data (all the time)
+  printRotaryValues();
+  // sendAllValues(); // Actually send data (all the time)
   // sendSliderValues(); 
 }
 
@@ -120,6 +121,7 @@ void printRotaryValues() {
                            + String("; analog: ") + analogValues_rotary[i];
     Serial.write(printedString.c_str());
   }
+  Serial.write("\n");
 }
 
 
@@ -156,10 +158,10 @@ void checkButtons() {
 
 void checkEncoders() {
 
-  digitalValues_rotary[0] = encoder1.getPosition();
-  digitalValues_rotary[1] = encoder2.getPosition();
-  digitalValues_rotary[2] = encoder3.getPosition();
-  digitalValues_rotary[3] = encoder4.getPosition();
+  digitalValues_rotary[0] = encoder1.read();
+  digitalValues_rotary[1] = encoder2.read();
+  digitalValues_rotary[2] = encoder3.read();
+  digitalValues_rotary[3] = encoder4.read();
 
 
   for (int i = 0; i < NUM_ROTARY; i++) {
@@ -184,9 +186,9 @@ void checkEncoders() {
 
   }
 
-  encoder1.setPosition(digitalValues_rotary[0]);
-  encoder2.setPosition(digitalValues_rotary[1]);
-  encoder3.setPosition(digitalValues_rotary[2]);
-  encoder4.setPosition(digitalValues_rotary[3]);
+  encoder1.write(digitalValues_rotary[0]);
+  encoder2.write(digitalValues_rotary[1]);
+  encoder3.write(digitalValues_rotary[2]);
+  encoder4.write(digitalValues_rotary[3]);
 
 }
