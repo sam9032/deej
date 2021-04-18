@@ -66,6 +66,7 @@ void loop() {
   // printButtonValues();
   checkEncoders();
   // printRotaryValues();
+  // printMuteState();
   sendAllValues(); // Actually send data (all the time)
   // sendSliderValues(); 
 }
@@ -124,6 +125,14 @@ void printRotaryValues() {
   Serial.write("\n");
 }
 
+void printMuteState() {
+
+  for (int i = 0; i < NUM_ROTARY; i++) {
+    String printedString = String("MuteState ") +String( i) + String(": ") + String(muteState[i]);
+    Serial.write(printedString.c_str());
+  }
+  Serial.write("\n");
+}
 
 void sendAllValues() {
   String builtString = String("");
@@ -138,7 +147,7 @@ void sendAllValues() {
   for (int i = 0; i < NUM_ROTARY; i++) {
     builtString += String((int)analogValues_rotary[i]);
 
-    if (i < (NUM_ROTARY + NUM_SLIDERS) - 1) {
+    if (i < ((NUM_ROTARY) - 1)) {
       builtString += String("|");
     }
   }
@@ -149,10 +158,24 @@ void sendAllValues() {
 
 void checkButtons() {
 
+  // state == 0, button pressed
+  // state == 1, button not pressed
+
   buttonState[0] = digitalRead(button1);
   buttonState[1] = digitalRead(button2);
   buttonState[2] = digitalRead(button3);
   buttonState[3] = digitalRead(button4);
+
+  for (int i = i; i < NUM_BUTTONS; i++){
+    if (buttonState[i] == 0){
+      if (muteState[i] == 0){
+        muteState[i] = 1;
+      }
+      else {
+        muteState[i] = 0;
+      }
+    }
+  }
 
 }
 
@@ -166,7 +189,7 @@ void checkEncoders() {
 
   for (int i = 0; i < NUM_ROTARY; i++) {
 
-    if (digitalValues_rotary[i] > 2 && digitalValues_rotary[i] < 102 && muteState[i] == 0) {
+    if (digitalValues_rotary[i] > 0 && digitalValues_rotary[i] < 102 && muteState[i] == 0) {
       analogValues_rotary[i] = digitalValues_rotary[i] * 10;
     }
 
