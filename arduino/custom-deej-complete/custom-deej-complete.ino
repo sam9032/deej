@@ -20,12 +20,10 @@ RotaryEncoder encoder4(11, 12);
 const int button1 = 4;
 const int button2 = 7;
 const int button3 = 10;
-const int button4 = 13;
+const int button4 = 15; //A1 als digitalen Pin benutzt
 
 unsigned long lastDebounceTime = 0;  // the last time the output pin was toggled
 unsigned long debounceDelay = 175;    // the debounce time; increase if the output flickers
-
-
 
 
 void setup() {
@@ -65,13 +63,12 @@ void loop() {
 
   //digital input
   checkButtons();
-  printButtonValues();
+  // printButtonValues();
   checkEncoders();
-
-  sendAllValues();
+  sendAllValues(); // Actually send data (all the time)
   // sendSliderValues(); 
-  // Actually send data (all the time)
 }
+
 
 void updateSliderValues() {
   for (int i = 0; i < NUM_SLIDERS; i++) {
@@ -109,21 +106,22 @@ void printSliderValues() {
 void printButtonValues() {
 
   for (int i = 0; i < NUM_BUTTONS; i++) {
-    String printedString = String("buttonState "() + String(i) + String(": ") + String(buttonState[i]);
-                                  Serial.write(printedString.c_str());
+    String printedString = String("buttonState ") + String(i) + String(": ") + String(buttonState[i]) + "; ";
+    Serial.print(printedString);
   }
+    Serial.write("\n");
 }
-}
+
 
 void printRotaryValues() {
 
   for (int i = 0; i < NUM_ROTARY; i++) {
-    String printedString = "Rotary encoder " + i + "; digital: " + digitalValues_rotary[i]
-                           + "; analog: " + analogValues_rotary[i];
+    String printedString = String("Rotary encoder ") +String( i) + String("; digital: ") + String(digitalValues_rotary[i])
+                           + String("; analog: ") + analogValues_rotary[i];
     Serial.write(printedString.c_str());
   }
 }
-}
+
 
 void sendAllValues() {
   String builtString = String("");
@@ -143,17 +141,17 @@ void sendAllValues() {
     }
   }
 
+  Serial.println(builtString);
 }
 
 
 void checkButtons() {
 
   buttonState[0] = digitalRead(button1);
-  buttonState[1] = digitalRead(button1);
-  buttonState[2] = digitalRead(button1);
-  buttonState[3] = digitalRead(button1);
+  buttonState[1] = digitalRead(button2);
+  buttonState[2] = digitalRead(button3);
+  buttonState[3] = digitalRead(button4);
 
-}
 }
 
 void checkEncoders() {
