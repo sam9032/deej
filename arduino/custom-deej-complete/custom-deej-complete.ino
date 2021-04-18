@@ -8,13 +8,13 @@ int buttonState[NUM_BUTTONS] = { };  //initialize with 0
 int muteState[NUM_BUTTONS] = { };
 int analogValues_slider[NUM_SLIDERS] = { }; //array with analog values read from analog input (0-1023)
 int analogValues_rotary[NUM_ROTARY] = { }; //array with analog values created from rotary encoders (0-1023)
-int digitalValues_rotary[NUM_ROTARY] = { };
+long digitalValues_rotary[NUM_ROTARY] = { };
 
 //initialize rotary encoders and set pins
-Encoder encoder1(2, 3, Encoder);
-Encoder encoder2(5, 6, Encoder);
-Encoder encoder3(8, 9, Encoder);
-Encoder encoder4(11, 12, Encoder);
+Encoder encoder1(2, 3);
+Encoder encoder2(5, 6);
+Encoder encoder3(8, 9);
+Encoder encoder4(11, 12);
 
 // encoder button pins
 const int button1 = 4;
@@ -65,8 +65,8 @@ void loop() {
   checkButtons();
   // printButtonValues();
   checkEncoders();
-  printRotaryValues();
-  // sendAllValues(); // Actually send data (all the time)
+  // printRotaryValues();
+  sendAllValues(); // Actually send data (all the time)
   // sendSliderValues(); 
 }
 
@@ -166,7 +166,7 @@ void checkEncoders() {
 
   for (int i = 0; i < NUM_ROTARY; i++) {
 
-    if (digitalValues_rotary[i] > 0 && digitalValues_rotary[i] < 102 && muteState[i] == 0) {
+    if (digitalValues_rotary[i] > 2 && digitalValues_rotary[i] < 102 && muteState[i] == 0) {
       analogValues_rotary[i] = digitalValues_rotary[i] * 10;
     }
 
